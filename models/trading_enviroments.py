@@ -21,5 +21,5 @@ class TradingEnvironment(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     owner: Mapped["User"] = relationship(back_populates="environments")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<TradEnv id={self.id} name={self.name}>"
