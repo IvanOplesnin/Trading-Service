@@ -16,4 +16,4 @@ class Settings(BaseSettings):
         env_file = ENV_PATH
 
 
-settings = Settings()
+settings = Settings() # type: ignore
