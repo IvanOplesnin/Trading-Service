@@ -26,9 +26,9 @@ jobs:
 
       - name: Run linters
         run: |
+          flake8 .
           black --check .
           isort --check-only .
-          flake8 .
           mypy .
 
       - name: Run tests
