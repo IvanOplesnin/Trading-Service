@@ -3,8 +3,10 @@ import datetime
 import jwt
 import pytest
 
-from api.security.token import Token
+from api.security.token import TokenRepo
 from models import User
+
+token_repo = TokenRepo(secret_key="<SECRET_KEY>", exp=10, algorithm="HS256")
 
 test_user = User(id=1, email="test@test.com", admin=False)
 
@@ -26,7 +28,7 @@ failed_token_exp = jwt.encode(
         "password": "<PASSWORD>",
         "exp": datetime.datetime.now(datetime.UTC) - datetime.timedelta(minutes=10),
     },
-    key=Token.secret_key,
+    key=token_repo.secret_key,
     algorithm="HS256",
 )
 
@@ -34,19 +36,19 @@ failed_token = "asklhrafgakfakjfgakkajfhgskja"
 
 
 def test_create_token() -> None:
-    token = Token.create_token(test_user)
-    token_2 = Token.create_token(test_user)
+    token = token_repo.create_token(test_user)
+    token_2 = token_repo.create_token(test_user)
 
     assert isinstance(token, str)
     assert token == token_2
 
 
 def test_read_token() -> None:
-    token = Token.create_token(test_user)
-    token_2 = Token.create_token(test_user_2)
+    token = token_repo.create_token(test_user)
+    token_2 = token_repo.create_token(test_user_2)
 
-    dict_jwt = Token.read_token(token)
-    dict_jwt_2 = Token.read_token(token_2)
+    dict_jwt = token_repo.read_token(token)
+    dict_jwt_2 = token_repo.read_token(token_2)
 
     assert dict_jwt["email"] == "test@test.com"
     assert dict_jwt["admin"] is False
@@ -59,20 +61,20 @@ def test_read_token() -> None:
 
 def test_read_token_invalid_key() -> None:
     with pytest.raises(jwt.InvalidSignatureError) as e:
-        Token.read_token(failed_token_key)
+        token_repo.read_token(failed_token_key)
 
     assert str(e.value) == "Invalid key"
 
 
 def test_read_token_invalid_exp() -> None:
     with pytest.raises(jwt.ExpiredSignatureError) as e:
-        Token.read_token(failed_token_exp)
+        token_repo.read_token(failed_token_exp)
 
     assert str(e.value) == "Expired token"
 
 
 def test_read_token_invalid_token() -> None:
     with pytest.raises(jwt.InvalidTokenError) as e:
-        Token.read_token(failed_token)
+        token_repo.read_token(failed_token)
 
     assert str(e.value) == "Invalid token"

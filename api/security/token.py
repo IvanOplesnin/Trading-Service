@@ -7,31 +7,36 @@ from config.config import settings
 from models import User
 
 
-class Token:
-    secret_key = settings.jwt_secret
-    exp = settings.jwt_expire_minutes
-    algorithm = settings.jwt_algorithm
+class TokenRepo:
 
-    @classmethod
-    def create_token(cls, user: User) -> str:
+    def __init__(
+        self,
+        secret_key: str = settings.jwt_secret,
+        exp: int = settings.jwt_expire_minutes,
+        algorithm: str = settings.jwt_algorithm,
+    ) -> None:
+        self.secret_key = secret_key
+        self.exp = exp
+        self.algorithm = algorithm
+
+    def create_token(self, user: User) -> str:
         return jwt.encode(
             payload={
                 "email": user.email,
                 "admin": user.admin,
                 "exp": datetime.datetime.now(datetime.UTC)
-                + datetime.timedelta(minutes=cls.exp),
+                + datetime.timedelta(minutes=self.exp),
             },
-            key=cls.secret_key,
-            algorithm=cls.algorithm,
+            key=self.secret_key,
+            algorithm=self.algorithm,
         )
 
-    @classmethod
-    def read_token(cls, token: str) -> Any:
+    def read_token(self, token: str) -> Any:
         try:
             decode = jwt.decode(
                 token,
-                cls.secret_key,
-                algorithms=cls.algorithm,
+                self.secret_key,
+                algorithms=self.algorithm,
             )
             return decode
         except jwt.exceptions.InvalidSignatureError:
@@ -40,3 +45,6 @@ class Token:
             raise jwt.exceptions.ExpiredSignatureError("Expired token")
         except jwt.exceptions.InvalidTokenError:
             raise jwt.exceptions.InvalidTokenError("Invalid token")
+
+
+token_repo = TokenRepo()
