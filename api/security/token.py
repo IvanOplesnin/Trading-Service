@@ -10,10 +10,10 @@ from models import User
 class TokenRepo:
 
     def __init__(
-            self,
-            secret_key: str = settings.jwt_secret,
-            exp: int = settings.jwt_expire_minutes,
-            algorithm: str = settings.jwt_algorithm,
+        self,
+        secret_key: str = settings.jwt_secret,
+        exp: int = settings.jwt_expire_minutes,
+        algorithm: str = settings.jwt_algorithm,
     ) -> None:
         self.secret_key = secret_key
         self.exp = exp
@@ -25,7 +25,7 @@ class TokenRepo:
                 "email": user.email,
                 "admin": user.admin,
                 "exp": datetime.datetime.now(datetime.UTC)
-                       + datetime.timedelta(minutes=self.exp),
+                + datetime.timedelta(minutes=self.exp),
             },
             key=self.secret_key,
             algorithm=self.algorithm,
