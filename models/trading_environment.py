@@ -15,7 +15,6 @@ class TradingEnvironment(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     api_key: Mapped[str] = mapped_column(nullable=False)
-    api_secret: Mapped[str] = mapped_column(nullable=False)
     account_api_id: Mapped[str] = mapped_column(nullable=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))

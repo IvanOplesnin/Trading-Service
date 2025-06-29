@@ -16,11 +16,13 @@ class User(Base):
     email: Mapped[str] = mapped_column(
         String(256), unique=True, nullable=False, index=True
     )
+    username: Mapped[str] = mapped_column(unique=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(nullable=False)
+    admin: Mapped[bool] = mapped_column(default=False, nullable=False)
 
     environments: Mapped[list["TradingEnvironment"]] = relationship(
         back_populates="owner", cascade="all, delete"
     )
 
     def __repr__(self) -> str:
-        return f"<User id={self.id} email={self.email}>"
+        return f"<User id={self.id} email={self.email} admin={self.admin}>"

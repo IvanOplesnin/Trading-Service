@@ -15,7 +15,6 @@ config = context.config
 # This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
-print(settings.db_url.replace("asyncpg", "psycopg2"))
 config.set_main_option("sqlalchemy.url", settings.db_url.replace("asyncpg", "psycopg2"))
 # add your model's MetaData object here
 # for 'autogenerate' support
