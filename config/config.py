@@ -7,7 +7,7 @@ ENV_PATH = BASE_DIR / ".env"
 
 
 class Settings(BaseSettings):
-    db_url: str = "fake-db-url"
+    db_url: str = "postgresql+asyncpg://fake:fake@localhost:5432/trading_db"
     jwt_secret: str = "fake-secret"
     jwt_expire_minutes: int = 300
     jwt_algorithm: str = "HS256"
