@@ -7,8 +7,8 @@ ENV_PATH = BASE_DIR / ".env"
 
 
 class Settings(BaseSettings):
-    db_url: str
-    jwt_secret: str
+    db_url: str = "fake-db-url"
+    jwt_secret: str = "fake-secret"
     jwt_expire_minutes: int = 300
     jwt_algorithm: str = "HS256"
     environment: str = "dev"
