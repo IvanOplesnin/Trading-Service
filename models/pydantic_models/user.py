@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Any, List, Optional
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 if TYPE_CHECKING:
     from models import ReadEnvironment
@@ -8,10 +8,15 @@ if TYPE_CHECKING:
 
 class UserBase(BaseModel):
     email: EmailStr = Field(..., description="email address")
-    username: str = Field(
-        default_factory=lambda data: data["email"], description="username", alias="name"
-    )
+    username: Optional[str] = Field(None, description="username", alias="name")
     admin: bool = Field(False, description="admin status")
+
+    @model_validator(mode="before")
+    @classmethod
+    def set_username(cls, data: dict[str, Any]) -> dict[str, Any]:
+        if "username" not in data:
+            data["username"] = data["email"]
+        return data
 
 
 class CreateUser(UserBase):
@@ -28,14 +33,16 @@ class UpdateUser(BaseModel):
     )
 
 
-class ReadUser(UserBase):
+class ResponseUser(UserBase):
     id: int = Field(..., description="user id in database")
-    list_environments: List["ReadEnvironment"]
+    environments: List["ReadEnvironment"] = Field(
+        default_factory=list, alias="list_environments"
+    )
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class ResponseUser(UserBase):
+class ReadUser(UserBase):
     id: int = Field(..., description="user id in database")
 
     model_config = ConfigDict(from_attributes=True)

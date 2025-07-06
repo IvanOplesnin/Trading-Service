@@ -4,4 +4,5 @@ extend-ignore = E203, W503
 exclude = .git,__pycache__,.venv,.idea
 per-file-ignores =
     __init__.py: F401, F405, F403
+    forward_refs.py: F401
     env.py: F401

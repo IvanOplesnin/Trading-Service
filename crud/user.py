@@ -2,7 +2,7 @@ from typing import Optional
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import InstrumentedAttribute, joinedload
+from sqlalchemy.orm import InstrumentedAttribute, subqueryload
 
 from api.security.hash import Hash
 from models import CreateUser, UpdateUser, User
@@ -14,11 +14,10 @@ class UserRepository:
 
     async def create_user(self, user: CreateUser) -> int:
         user_dict = user.model_dump()
-        hash_password = Hash(user_dict.pop("password"))
-        user_dict["hash_password"] = hash_password()
+        hashed_password = Hash(user_dict.pop("password"))
+        user_dict["hashed_password"] = hashed_password()
         new_user = User(**user_dict)
         self.session.add(new_user)
-        await self.session.flush()
         await self.session.commit()
         return new_user.id
 
@@ -32,7 +31,7 @@ class UserRepository:
             raise ValueError(f"{field} is not a valid SQLAlchemy column")
 
         stmt = (
-            select(User).where(column == value).options(joinedload(User.environments))
+            select(User).where(column == value).options(subqueryload(User.environments))
         )
         result = await self.session.execute(stmt)
         return result.scalars().first()
@@ -52,8 +51,8 @@ class UserRepository:
         if old_user:
             for key, value in user_dict.items():
                 if key == "password":
-                    hash_password = Hash(value)
-                    setattr(old_user, "hash_password", hash_password())
+                    hashed_password = Hash(value)
+                    setattr(old_user, "hashed_password", hashed_password())
                     continue
                 setattr(old_user, key, value)
             await self.session.commit()
@@ -63,5 +62,6 @@ class UserRepository:
         del_user = await self.get_by_id(user_id)
         if del_user:
             await self.session.delete(del_user)
+            await self.session.commit()
             return True
         return False

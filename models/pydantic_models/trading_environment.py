@@ -18,15 +18,20 @@ class CreateEnvironment(EnvironmentBase):
 
 
 class UpdateEnvironment(BaseModel):
+    id: int = Field(..., description="The id of the environment to update.")
     name: Optional[str] = Field(..., description="The name of the environment.")
     api_key: Optional[str] = Field(..., description="The Tinkoff access token.")
     account_api_id: Optional[str] = Field(..., description="Id account in Tinkoff")
-    user_id: Optional[str] = Field(..., description="user ID of the environment host")
+    user_id: Optional[int] = Field(..., description="user ID of the environment host")
 
 
 class ReadEnvironment(EnvironmentBase):
+    id: int
     model_config = ConfigDict(from_attributes=True)
 
 
 class ResponseEnvironment(BaseModel):
+    id: int
     user: "ResponseUser"
+
+    model_config = ConfigDict(from_attributes=True)
