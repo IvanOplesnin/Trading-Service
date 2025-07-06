@@ -13,9 +13,7 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    email: Mapped[str] = mapped_column(
-        CITEXT(), unique=True, nullable=False, index=True
-    )
+    email: Mapped[str] = mapped_column(CITEXT, unique=True, nullable=False, index=True)
     username: Mapped[str] = mapped_column(unique=True, nullable=False)
     hashed_password: Mapped[str] = mapped_column(nullable=False)
     admin: Mapped[bool] = mapped_column(default=False, nullable=False)
